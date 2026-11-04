@@ -1,0 +1,11 @@
+# data files are too big for GitHub and are created by the notebooks
+data/
+raw/
+clean/
+clean_files.zip
+
+# my own notes, not part of the submission
+demo_notes.md
+
+# never commit secrets
+.env
