@@ -34,9 +34,11 @@ flowchart LR
 | 3 | [`03_databricks_spark_gold`](03_databricks_spark_gold.ipynb) | Databricks | Part 5 |
 | 4 | [`04_databricks_mlflow_churn`](04_databricks_mlflow_churn.ipynb) | Databricks | Part 6 |
 
-Add `PG_URL` and `MONGO_URL` to Colab Secrets. No connection strings are stored in this repository. If a connection is unavailable, Notebook 1 uses the backup files in `data/`. Upload the Parquet files from `clean/` to a Databricks volume, then run Notebooks 2 to 4. The main Spark SQL queries are also in [`sql/queries.sql`](sql/queries.sql).
+[![Open Notebook 1 in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Mustafasaeed850/online-shop-etl/blob/main/01_colab_extract_transform_design.ipynb)
 
-**Data source note:** Notebook 1's saved output comes from the backup files, which hold the same records as the class databases, and was run outside Colab. Its database code was tested on a local PostgreSQL and a simulated MongoDB, and gave the same fact table. Notebooks 2 to 4 ran on Databricks Free Edition (serverless), and their saved output comes from those runs.
+Add `PG_URL` and `MONGO_URL` to Colab Secrets. No connection strings are stored in this repository. If a connection is unavailable, Notebook 1 downloads the backup files from the `backup-data` branch, so you can also just click Run all. Upload the Parquet files from `clean/` to a Databricks volume, then run Notebooks 2 to 4. The main Spark SQL queries are also in [`sql/queries.sql`](sql/queries.sql).
+
+**Data source note:** Notebook 1's saved output comes from a full Run all in Google Colab using the backup files, which hold the same records as the class databases. It has not been run against the class databases themselves; its database code was tested on a local PostgreSQL and a simulated MongoDB, and gave the same fact table. Notebooks 2 to 4 ran on Databricks Free Edition (serverless), and their saved output comes from those runs.
 
 ## Parts 1 and 2: Extract and clean
 
