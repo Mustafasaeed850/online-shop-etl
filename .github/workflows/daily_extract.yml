@@ -1,0 +1,32 @@
+name: Daily extract
+
+on:
+  schedule:
+    - cron: "0 2 * * *"   # every day at 02:00 UTC, which is 07:00 in Pakistan
+  workflow_dispatch:       # also lets me run it by hand from the Actions tab
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install libraries
+        run: pip install pandas pyarrow requests sqlalchemy psycopg2-binary pymongo
+
+      - name: Run the extraction
+        env:
+          PG_URL: ${{ secrets.PG_URL }}
+          MONGO_URL: ${{ secrets.MONGO_URL }}
+        run: python scripts/daily_extract.py
+
+      # keeps the raw files for 7 days as a download on the run page
+      - uses: actions/upload-artifact@v4
+        with:
+          name: raw-files
+          path: raw/
+          retention-days: 7

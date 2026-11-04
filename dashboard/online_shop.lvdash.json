@@ -1,0 +1,565 @@
+{
+ "datasets": [
+  {
+   "name": "kpis",
+   "displayName": "kpis",
+   "queryLines": [
+    "SELECT SUM(revenue) AS total_revenue,\n               SUM(order_count) AS total_orders,\n               SUM(revenue) / SUM(order_count) AS avg_order_value\n        FROM workspace.mustafa_shop.gold_monthly_sales"
+   ]
+  },
+  {
+   "name": "customers",
+   "displayName": "customers",
+   "queryLines": [
+    "SELECT COUNT(*) AS customers\n        FROM workspace.mustafa_shop.gold_customer_features"
+   ]
+  },
+  {
+   "name": "monthly",
+   "displayName": "monthly",
+   "queryLines": [
+    "SELECT month, SUM(revenue) AS revenue\n        FROM workspace.mustafa_shop.gold_monthly_sales\n        WHERE month <= '2026-09'\n        GROUP BY month"
+   ]
+  },
+  {
+   "name": "city",
+   "displayName": "city",
+   "queryLines": [
+    "SELECT city, SUM(revenue) AS revenue\n        FROM workspace.mustafa_shop.gold_monthly_sales\n        GROUP BY city"
+   ]
+  },
+  {
+   "name": "category",
+   "displayName": "category",
+   "queryLines": [
+    "SELECT category,\n               SUM(revenue) AS revenue,\n               SUM(revenue) / SUM(order_count) AS avg_order_value\n        FROM workspace.mustafa_shop.gold_category_mix\n        GROUP BY category"
+   ]
+  },
+  {
+   "name": "growth",
+   "displayName": "growth",
+   "queryLines": [
+    "SELECT city,\n               ROUND((SUM(CASE WHEN month BETWEEN '2026-01' AND '2026-09' THEN revenue END)\n                    / SUM(CASE WHEN month BETWEEN '2025-01' AND '2025-09' THEN revenue END) - 1) * 100, 2)\n                    AS revenue_growth_pct\n        FROM workspace.mustafa_shop.gold_monthly_sales\n        GROUP BY city\n        ORDER BY revenue_growth_pct DESC"
+   ]
+  },
+  {
+   "name": "rain",
+   "displayName": "rain",
+   "queryLines": [
+    "SELECT city,\n               ROUND(AVG(CASE WHEN is_rainy THEN orders_placed END), 2) AS rainy_day_orders,\n               ROUND(AVG(CASE WHEN NOT is_rainy THEN orders_placed END), 2) AS dry_day_orders\n        FROM workspace.mustafa_shop.gold_city_weather_daily\n        GROUP BY city\n        ORDER BY city"
+   ]
+  }
+ ],
+ "pages": [
+  {
+   "name": "overview",
+   "displayName": "Overview",
+   "pageType": "PAGE_TYPE_CANVAS",
+   "layout": [
+    {
+     "widget": {
+      "name": "heading",
+      "multilineTextboxSpec": {
+       "lines": [
+        "## Online Shop Sales\n",
+        "Sales exclude cancelled and returned orders. Data runs from January 2025 to 24 October 2026."
+       ]
+      }
+     },
+     "position": {
+      "x": 0,
+      "y": 0,
+      "width": 6,
+      "height": 2
+     }
+    },
+    {
+     "widget": {
+      "name": "kpi_revenue",
+      "queries": [
+       {
+        "name": "main_query",
+        "query": {
+         "datasetName": "kpis",
+         "fields": [
+          {
+           "name": "total_revenue",
+           "expression": "`total_revenue`"
+          }
+         ],
+         "disaggregated": true
+        }
+       }
+      ],
+      "spec": {
+       "version": 2,
+       "widgetType": "counter",
+       "encodings": {
+        "value": {
+         "fieldName": "total_revenue",
+         "displayName": "Total revenue"
+        }
+       },
+       "frame": {
+        "title": "Total revenue",
+        "showTitle": true
+       }
+      }
+     },
+     "position": {
+      "x": 0,
+      "y": 2,
+      "width": 2,
+      "height": 2
+     }
+    },
+    {
+     "widget": {
+      "name": "kpi_orders",
+      "queries": [
+       {
+        "name": "main_query",
+        "query": {
+         "datasetName": "kpis",
+         "fields": [
+          {
+           "name": "total_orders",
+           "expression": "`total_orders`"
+          }
+         ],
+         "disaggregated": true
+        }
+       }
+      ],
+      "spec": {
+       "version": 2,
+       "widgetType": "counter",
+       "encodings": {
+        "value": {
+         "fieldName": "total_orders",
+         "displayName": "Orders sold"
+        }
+       },
+       "frame": {
+        "title": "Orders sold",
+        "showTitle": true
+       }
+      }
+     },
+     "position": {
+      "x": 2,
+      "y": 2,
+      "width": 1,
+      "height": 2
+     }
+    },
+    {
+     "widget": {
+      "name": "kpi_aov",
+      "queries": [
+       {
+        "name": "main_query",
+        "query": {
+         "datasetName": "kpis",
+         "fields": [
+          {
+           "name": "avg_order_value",
+           "expression": "`avg_order_value`"
+          }
+         ],
+         "disaggregated": true
+        }
+       }
+      ],
+      "spec": {
+       "version": 2,
+       "widgetType": "counter",
+       "encodings": {
+        "value": {
+         "fieldName": "avg_order_value",
+         "displayName": "Average order value"
+        }
+       },
+       "frame": {
+        "title": "Average order value",
+        "showTitle": true
+       }
+      }
+     },
+     "position": {
+      "x": 3,
+      "y": 2,
+      "width": 2,
+      "height": 2
+     }
+    },
+    {
+     "widget": {
+      "name": "kpi_customers",
+      "queries": [
+       {
+        "name": "main_query",
+        "query": {
+         "datasetName": "customers",
+         "fields": [
+          {
+           "name": "customers",
+           "expression": "`customers`"
+          }
+         ],
+         "disaggregated": true
+        }
+       }
+      ],
+      "spec": {
+       "version": 2,
+       "widgetType": "counter",
+       "encodings": {
+        "value": {
+         "fieldName": "customers",
+         "displayName": "Customers"
+        }
+       },
+       "frame": {
+        "title": "Customers",
+        "showTitle": true
+       }
+      }
+     },
+     "position": {
+      "x": 5,
+      "y": 2,
+      "width": 1,
+      "height": 2
+     }
+    },
+    {
+     "widget": {
+      "name": "monthly_revenue",
+      "queries": [
+       {
+        "name": "main_query",
+        "query": {
+         "datasetName": "monthly",
+         "fields": [
+          {
+           "name": "month",
+           "expression": "`month`"
+          },
+          {
+           "name": "revenue",
+           "expression": "`revenue`"
+          }
+         ],
+         "disaggregated": true
+        }
+       }
+      ],
+      "spec": {
+       "version": 3,
+       "widgetType": "line",
+       "encodings": {
+        "x": {
+         "fieldName": "month",
+         "scale": {
+          "type": "categorical"
+         },
+         "displayName": "Month"
+        },
+        "y": {
+         "fieldName": "revenue",
+         "scale": {
+          "type": "quantitative"
+         },
+         "displayName": "Revenue"
+        }
+       },
+       "frame": {
+        "title": "Revenue by month (to September 2026)",
+        "showTitle": true
+       }
+      }
+     },
+     "position": {
+      "x": 0,
+      "y": 4,
+      "width": 6,
+      "height": 5
+     }
+    },
+    {
+     "widget": {
+      "name": "city_revenue",
+      "queries": [
+       {
+        "name": "main_query",
+        "query": {
+         "datasetName": "city",
+         "fields": [
+          {
+           "name": "city",
+           "expression": "`city`"
+          },
+          {
+           "name": "revenue",
+           "expression": "`revenue`"
+          }
+         ],
+         "disaggregated": true
+        }
+       }
+      ],
+      "spec": {
+       "version": 3,
+       "widgetType": "bar",
+       "encodings": {
+        "x": {
+         "fieldName": "revenue",
+         "scale": {
+          "type": "quantitative"
+         },
+         "displayName": "Revenue"
+        },
+        "y": {
+         "fieldName": "city",
+         "scale": {
+          "type": "categorical",
+          "sort": {
+           "by": "x-reversed"
+          }
+         },
+         "displayName": "City"
+        }
+       },
+       "frame": {
+        "title": "Revenue by city",
+        "showTitle": true
+       }
+      }
+     },
+     "position": {
+      "x": 0,
+      "y": 9,
+      "width": 3,
+      "height": 6
+     }
+    },
+    {
+     "widget": {
+      "name": "category_revenue",
+      "queries": [
+       {
+        "name": "main_query",
+        "query": {
+         "datasetName": "category",
+         "fields": [
+          {
+           "name": "category",
+           "expression": "`category`"
+          },
+          {
+           "name": "revenue",
+           "expression": "`revenue`"
+          }
+         ],
+         "disaggregated": true
+        }
+       }
+      ],
+      "spec": {
+       "version": 3,
+       "widgetType": "bar",
+       "encodings": {
+        "x": {
+         "fieldName": "revenue",
+         "scale": {
+          "type": "quantitative"
+         },
+         "displayName": "Revenue"
+        },
+        "y": {
+         "fieldName": "category",
+         "scale": {
+          "type": "categorical",
+          "sort": {
+           "by": "x-reversed"
+          }
+         },
+         "displayName": "Category"
+        }
+       },
+       "frame": {
+        "title": "Revenue by category",
+        "showTitle": true
+       }
+      }
+     },
+     "position": {
+      "x": 3,
+      "y": 9,
+      "width": 3,
+      "height": 6
+     }
+    },
+    {
+     "widget": {
+      "name": "growth_table",
+      "queries": [
+       {
+        "name": "main_query",
+        "query": {
+         "datasetName": "growth",
+         "fields": [
+          {
+           "name": "city",
+           "expression": "`city`"
+          },
+          {
+           "name": "revenue_growth_pct",
+           "expression": "`revenue_growth_pct`"
+          }
+         ],
+         "disaggregated": true
+        }
+       }
+      ],
+      "spec": {
+       "version": 2,
+       "widgetType": "table",
+       "encodings": {
+        "columns": [
+         {
+          "fieldName": "city",
+          "displayName": "City"
+         },
+         {
+          "fieldName": "revenue_growth_pct",
+          "displayName": "Growth %"
+         }
+        ]
+       },
+       "frame": {
+        "title": "Revenue growth: Jan to Sep 2026 against 2025",
+        "showTitle": true
+       }
+      }
+     },
+     "position": {
+      "x": 0,
+      "y": 15,
+      "width": 2,
+      "height": 7
+     }
+    },
+    {
+     "widget": {
+      "name": "rain_table",
+      "queries": [
+       {
+        "name": "main_query",
+        "query": {
+         "datasetName": "rain",
+         "fields": [
+          {
+           "name": "city",
+           "expression": "`city`"
+          },
+          {
+           "name": "rainy_day_orders",
+           "expression": "`rainy_day_orders`"
+          },
+          {
+           "name": "dry_day_orders",
+           "expression": "`dry_day_orders`"
+          }
+         ],
+         "disaggregated": true
+        }
+       }
+      ],
+      "spec": {
+       "version": 2,
+       "widgetType": "table",
+       "encodings": {
+        "columns": [
+         {
+          "fieldName": "city",
+          "displayName": "City"
+         },
+         {
+          "fieldName": "rainy_day_orders",
+          "displayName": "Rainy day"
+         },
+         {
+          "fieldName": "dry_day_orders",
+          "displayName": "Dry day"
+         }
+        ]
+       },
+       "frame": {
+        "title": "Average orders per day: rainy and dry",
+        "showTitle": true
+       }
+      }
+     },
+     "position": {
+      "x": 2,
+      "y": 15,
+      "width": 2,
+      "height": 7
+     }
+    },
+    {
+     "widget": {
+      "name": "aov_table",
+      "queries": [
+       {
+        "name": "main_query",
+        "query": {
+         "datasetName": "category",
+         "fields": [
+          {
+           "name": "category",
+           "expression": "`category`"
+          },
+          {
+           "name": "avg_order_value",
+           "expression": "`avg_order_value`"
+          }
+         ],
+         "disaggregated": true
+        }
+       }
+      ],
+      "spec": {
+       "version": 2,
+       "widgetType": "table",
+       "encodings": {
+        "columns": [
+         {
+          "fieldName": "category",
+          "displayName": "Category"
+         },
+         {
+          "fieldName": "avg_order_value",
+          "displayName": "Average order value"
+         }
+        ]
+       },
+       "frame": {
+        "title": "Average order value by category",
+        "showTitle": true
+       }
+      }
+     },
+     "position": {
+      "x": 4,
+      "y": 15,
+      "width": 2,
+      "height": 7
+     }
+    }
+   ]
+  }
+ ]
+}
